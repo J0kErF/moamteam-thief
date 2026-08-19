@@ -1,0 +1,28 @@
+# --- SECRETS: never commit (book Appendix A, rules #39/#40) ---
+credentials.json
+token.json
+.env
+*.pem
+*.key
+# Private student identity — stays on the developer machine only
+*.local.toml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Runtime artifacts
+logs/
+*.log
+
+# OS / editors
+.DS_Store
+Thumbs.db

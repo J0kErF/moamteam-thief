@@ -1,0 +1,118 @@
+{
+  "description": "PROMOTED — the at-least-once receiver contract (SPEC section 7.1). Both registered wire shapes ride HTTP, which is at-least-once: a push whose ack is lost is retried by a CORRECT client, so the same message arrives twice by design, not only on bad networks. Behaviour, not bytes, so it is pinned as a decision table. Promoted 2026-07-26: implemented independently by two teams (2026-07-22) and then exercised across a full six-sub-game cross-team series over public tunnels on 2026-07-25, mutual audits clean both ways.",
+  "status": "PROMOTED",
+  "state_shape": {
+    "played": "{step: commit} — every step already applied, keyed by the commit that sealed it",
+    "window": "how many out-of-order steps may be buffered; 0 means none",
+    "next": "the next step this receiver expects to apply"
+  },
+  "state": {
+    "played": {
+      "1": "c1",
+      "2": "c2"
+    },
+    "window": 2,
+    "next": 3
+  },
+  "arrivals": [
+    {
+      "arrival": {
+        "step": 3,
+        "commit": "c3"
+      },
+      "note": "the next expected step",
+      "decision": "apply"
+    },
+    {
+      "arrival": {
+        "step": 2,
+        "commit": "c2"
+      },
+      "note": "redelivery: SAME commit for a played step -> absorb, state unchanged. Dedupe on the commit, not on (kind, step)",
+      "decision": "absorb"
+    },
+    {
+      "arrival": {
+        "step": 2,
+        "commit": "cX"
+      },
+      "note": "a DIFFERENT commit for a played step -> equivocation. This is tampering evidence and must stay loud; a (kind, step) key would have collapsed it silently into the row above",
+      "decision": "equivocation"
+    },
+    {
+      "arrival": {
+        "step": 4,
+        "commit": "c4"
+      },
+      "note": "one ahead, inside the reorder window -> buffer and replay in step order",
+      "decision": "buffer"
+    },
+    {
+      "arrival": {
+        "step": 5,
+        "commit": "c5"
+      },
+      "note": "at the window bound -> still buffered",
+      "decision": "buffer"
+    },
+    {
+      "arrival": {
+        "step": 6,
+        "commit": "c6"
+      },
+      "note": "past the window -> violation. Let the window BE the flood rule; a second threshold beside it is unreachable",
+      "decision": "violation"
+    },
+    {
+      "arrival": {
+        "step": 0,
+        "commit": "c0"
+      },
+      "note": "below `next` and never played -> discard. `next` only advances past accepted steps, so this can never become applicable; buffering it holds it forever and two conformant receivers could diverge on it. NOTE: this row postdates the 2026-07-25/08-04 promotions and is not yet reproduced by a second implementation (anrbj666's audit, 2026-08-04)",
+      "decision": "discard"
+    }
+  ],
+  "no_reorder_window": {
+    "note": "the same one-ahead arrival against a receiver with window=0. A receiver with no reorder window turns an ordinary retry race into a protocol violation — under App. E rule 35 that is a self-inflicted technical loss zeroing BOTH teams. Zero tolerance is not a tightening here.",
+    "state": {
+      "played": {
+        "1": "c1",
+        "2": "c2"
+      },
+      "window": 0,
+      "next": 3
+    },
+    "arrival": {
+      "step": 4,
+      "commit": "c4"
+    },
+    "decision": "violation"
+  },
+  "deadline_rule": [
+    {
+      "deadline_at": 100.0,
+      "now": 90.0,
+      "arrived": false,
+      "tolerated": false,
+      "note": "quiet lap, in budget",
+      "decision": "waiting"
+    },
+    {
+      "deadline_at": 100.0,
+      "now": 90.0,
+      "arrived": true,
+      "tolerated": true,
+      "note": "tolerated traffic arrived -> the deadline does NOT move: one clock per EXPECTED message, so a stall burns the sender's budget, not ours",
+      "decision": "waiting"
+    },
+    {
+      "deadline_at": 100.0,
+      "now": 100.0,
+      "arrived": true,
+      "tolerated": true,
+      "note": "expires on a lap where a message DID arrive — a receiver that checks its clock only on an empty poll never checks it under a flood",
+      "decision": "expired"
+    }
+  ],
+  "no_rules_tolerance": "none of this relaxes commit-reveal. Transport tolerance, no rules tolerance: equivocation still collapses the game."
+}

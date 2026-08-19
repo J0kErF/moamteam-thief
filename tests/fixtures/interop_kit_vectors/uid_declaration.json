@@ -1,0 +1,107 @@
+{
+  "description": "PROPOSED — declaring the derived game_uid at negotiate (SPEC section 7.3). The uid never crosses the wire: each peer derives it from the flat negotiated terms and the two sorted group ids, so neither has anything to compare against. A peer that derives it from the wrong input produces a uid that is deterministic, self-consistent across its own four artifacts, and wrong only against the opponent — invisible until two reports are diffed, after the games are over. Observed live across a full six-sub-game series on 2026-07-25. Behaviour, not bytes, so it is pinned as a truth table. PROPOSED: both implementations have DECLARED it live since 2026-08-01 (every handshake through the 2026-08-04 counted series, both role directions, values matching by independent derivation), but the REFUSE row has never fired cross-team and only one implementation's tests pin it — a behaviour table promotes on decisions, not on the happy path. Finding credited to both teams — imreeyal observed that the divergence was silent for the whole series, anrbj666's root-cause analysis made the mechanism precise.",
+  "status": "PROPOSED",
+  "field": {
+    "name": "game_uid",
+    "placement": "top-level in the negotiate message, beside `role` and `sub_game_number` and OUTSIDE `terms` — the signed set is flat and closed, so a key added there breaks the signature (section 4)",
+    "value": "the uid this peer derived: UUID(SHA256(canonical(flat_terms)|'|'.join(sorted([g_a,g_b])))[:16])"
+  },
+  "worked_example": {
+    "note": "the same derivation over the right input and over a wider config; both are valid stable uuids, which is precisely why the wrong one is hard to notice",
+    "group_ids": [
+      "team-aleph",
+      "team-bet"
+    ],
+    "flat_terms": {
+      "board_size": 7,
+      "smell_grid_size": 5,
+      "decay_per_step": 0.1,
+      "emit_intensity": 0.9,
+      "min_center_intensity": 0.5,
+      "max_steps": 35,
+      "barriers_max": 14,
+      "setting": "Haifa",
+      "hint_max_words": 15,
+      "axis_origin_corner": "top-left",
+      "axis_start_index": 0,
+      "thief_start": [
+        3,
+        3
+      ],
+      "cop_start": [
+        0,
+        0
+      ],
+      "num_games": 6
+    },
+    "wider_config": {
+      "board_size": 7,
+      "smell_grid_size": 5,
+      "decay_per_step": 0.1,
+      "emit_intensity": 0.9,
+      "min_center_intensity": 0.5,
+      "max_steps": 35,
+      "barriers_max": 14,
+      "setting": "Haifa",
+      "hint_max_words": 15,
+      "axis_origin_corner": "top-left",
+      "axis_start_index": 0,
+      "thief_start": [
+        3,
+        3
+      ],
+      "cop_start": [
+        0,
+        0
+      ],
+      "num_games": 6,
+      "network": {
+        "my_port": 8801
+      },
+      "strategy": {
+        "police_class": "example"
+      }
+    },
+    "from_flat_terms": "a6ae6e70-9da2-f5cc-f365-443f077b9e1c",
+    "from_a_wider_config": "5db600b1-0bce-2aeb-4068-2717f6032be0",
+    "identical": false
+  },
+  "refusal_rule": [
+    {
+      "ours": "a6ae6e70-9da2-f5cc-f365-443f077b9e1c",
+      "theirs": "a6ae6e70-9da2-f5cc-f365-443f077b9e1c",
+      "note": "both derived from the flat terms — the ordinary case",
+      "decision": "play"
+    },
+    {
+      "ours": "a6ae6e70-9da2-f5cc-f365-443f077b9e1c",
+      "theirs": "5db600b1-0bce-2aeb-4068-2717f6032be0",
+      "note": "their uid came from a WIDER config than the negotiated terms. It is deterministic and self-consistent across all four of their artifacts, so nothing on their side can see it — this row is the only place it surfaces before the reports are diffed",
+      "decision": "refuse"
+    },
+    {
+      "ours": "a6ae6e70-9da2-f5cc-f365-443f077b9e1c",
+      "theirs": null,
+      "note": "they declare nothing (the unmodified reference peer) -> play",
+      "decision": "play"
+    },
+    {
+      "ours": null,
+      "theirs": "a6ae6e70-9da2-f5cc-f365-443f077b9e1c",
+      "note": "we declare nothing -> play; omission never refuses in either direction",
+      "decision": "play"
+    },
+    {
+      "ours": null,
+      "theirs": null,
+      "note": "neither declares",
+      "decision": "play"
+    },
+    {
+      "ours": "a6ae6e70-9da2-f5cc-f365-443f077b9e1c",
+      "theirs": 12345,
+      "note": "an uncomparable value is treated as silence, not as a mismatch",
+      "decision": "play"
+    }
+  ]
+}

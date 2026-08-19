@@ -1,0 +1,62 @@
+{
+  "description": "ENHANCEMENT (not required by the book): seeded asymmetric starts, a structural tie-breaker if a pair prefers randomized fair starts over the book's fixed configured cop_start/thief_start. 4 digest bytes per cell, minimum-Chebyshev deterministic re-draw, index = game*16 + attempt.",
+  "status": "ENH",
+  "vectors": [
+    {
+      "seed": "seed-alpha",
+      "index": 0,
+      "n": 7,
+      "cop": [
+        0,
+        1
+      ],
+      "thief": [
+        4,
+        1
+      ],
+      "draws": 0
+    },
+    {
+      "seed": "seed-alpha",
+      "index": 1,
+      "n": 7,
+      "cop": [
+        1,
+        4
+      ],
+      "thief": [
+        5,
+        2
+      ],
+      "draws": 1
+    },
+    {
+      "seed": "seed-beta",
+      "index": 0,
+      "n": 10,
+      "cop": [
+        0,
+        2
+      ],
+      "thief": [
+        8,
+        3
+      ],
+      "draws": 0
+    },
+    {
+      "seed": "seed-beta",
+      "index": 16,
+      "n": 10,
+      "cop": [
+        5,
+        0
+      ],
+      "thief": [
+        6,
+        5
+      ],
+      "draws": 0
+    }
+  ]
+}

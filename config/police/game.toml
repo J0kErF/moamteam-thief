@@ -1,0 +1,39 @@
+# POLICE peer -- PRIVATE local configuration (never signed, never shared).
+# Anything both sides must agree on lives ONLY in the shared config/game.json.
+version = "0.1"
+
+[game]
+group_name = "moamteam"
+group_id = "moamteam"
+sub_game_number = 1
+members = ["STUDENT-ID-1", "STUDENT-ID-2"]          # TODO: fill real student IDs
+repos = { cop = "https://github.com/J0kErF/moamteam-police", thief = "https://github.com/J0kErF/moamteam-thief" }
+
+[belief]
+smell_trust_weight = 4.0
+
+# [strategy]  -- our brain classes land here in Stage 3 (PRD-03)
+# police_class = "moamteam.strategy.brains:MoamPoliceBrain"
+
+# [trash_talk] -- verbal-layer provider (Stage 4, PRD-04). Default: template (0 tokens).
+# provider = "template"
+
+[paths]
+logs_dir = "logs"
+log_filename = "{role}_match.json"
+
+[play]
+step_speed_seconds = 1.0   # per-own-turn pause: tunnel-polite and GUI-watchable
+
+[network]
+my_port = 8802
+opponent_url = "http://127.0.0.1:8801/mcp"
+turn_timeout_seconds = 180
+# opponent_bearer_token = ""   # set (in members.local.toml) if the rival's tunnel requires Authorization: Bearer
+
+[email]
+recipient = "rmisegal+uoh26finalgame@gmail.com"
+enabled = false                     # flip to true for counted league games ONLY
+# OAuth material lives OUTSIDE the repo tree (never committed; rule #39/#40).
+credentials_path = "C:/Users/moham/secrets/moamteam-google/credentials.json"
+token_path = "C:/Users/moham/secrets/moamteam-google/token-gmail-send.json"

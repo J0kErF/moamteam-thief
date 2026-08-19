@@ -1,0 +1,505 @@
+{
+  "description": "PROMOTED — the book's ch.4 scent model as a named registration, 'multiplicative_book_v1', beside the reference's 'subtractive_chebyshev_v1' (section 5, CORE). Multiplicative decay against a verbatim 5x5 figure-4 kernel, once per FULL turn, from an empty start, with NO rounding. Promoted 2026-07-20 per the kit's own bar: byte-exact clean-room reproduction by a second independent implementation that predates these vectors (anrbj666, issue #6 — kernel, 2/2 emits, 3/3 walk turns, both scalar traces, every ordering-probe case with zero tolerance; their update natively computes the pinned algebraic form). Spec facts contributed by anrbj666 (Alon Engel, Renat Karimov); every value below is re-derived here from book v3.0.0 ch.4 and App. F.",
+  "status": "PROMOTED",
+  "model": {
+    "family": "scent_model",
+    "name": "multiplicative_book_v1",
+    "params": {
+      "field_size": 5,
+      "center_intensity": 0.9,
+      "decay_rho": 0.1,
+      "kernel": [
+        [
+          0.04,
+          0.14,
+          0.2,
+          0.14,
+          0.04
+        ],
+        [
+          0.14,
+          0.42,
+          0.62,
+          0.42,
+          0.14
+        ],
+        [
+          0.2,
+          0.62,
+          0.9,
+          0.62,
+          0.2
+        ],
+        [
+          0.14,
+          0.42,
+          0.62,
+          0.42,
+          0.14
+        ],
+        [
+          0.04,
+          0.14,
+          0.2,
+          0.14,
+          0.04
+        ]
+      ],
+      "kernel_source": "book v3.0.0 figure 4 — printed values, verbatim lookup",
+      "decay": "multiplicative",
+      "update": "tau' = clamp((1 - rho) * tau + kernel_delta, 0, center_intensity)",
+      "evaluation_order": "(1 - rho) * tau + delta, then clamp",
+      "rounding_decimals": null,
+      "clamp": [
+        0.0,
+        0.9
+      ],
+      "cadence": "per_full_turn",
+      "order": "decay_then_deposit",
+      "receiver_side_decay": false,
+      "initial_field": "empty",
+      "transmitted": false
+    },
+    "example": {
+      "note": "the clamp case: a saturated cell decays, then takes an adjacent deposit",
+      "tau": 0.9,
+      "delta": 0.62,
+      "raw": 1.4300000000000002,
+      "clamped": 0.9
+    }
+  },
+  "kernel": [
+    [
+      0.04,
+      0.14,
+      0.2,
+      0.14,
+      0.04
+    ],
+    [
+      0.14,
+      0.42,
+      0.62,
+      0.42,
+      0.14
+    ],
+    [
+      0.2,
+      0.62,
+      0.9,
+      0.62,
+      0.2
+    ],
+    [
+      0.14,
+      0.42,
+      0.62,
+      0.42,
+      0.14
+    ],
+    [
+      0.04,
+      0.14,
+      0.2,
+      0.14,
+      0.04
+    ]
+  ],
+  "closed_form_probe": {
+    "round": {
+      "sigma_squared": 1.318,
+      "reproduces_printed_kernel": true,
+      "quantized": [
+        [
+          0.04,
+          0.14,
+          0.2,
+          0.14,
+          0.04
+        ],
+        [
+          0.14,
+          0.42,
+          0.62,
+          0.42,
+          0.14
+        ],
+        [
+          0.2,
+          0.62,
+          0.9,
+          0.62,
+          0.2
+        ],
+        [
+          0.14,
+          0.42,
+          0.62,
+          0.42,
+          0.14
+        ],
+        [
+          0.04,
+          0.14,
+          0.2,
+          0.14,
+          0.04
+        ]
+      ]
+    },
+    "trunc": {
+      "sigma_squared": 1.344,
+      "reproduces_printed_kernel": true,
+      "quantized": [
+        [
+          0.04,
+          0.14,
+          0.2,
+          0.14,
+          0.04
+        ],
+        [
+          0.14,
+          0.42,
+          0.62,
+          0.42,
+          0.14
+        ],
+        [
+          0.2,
+          0.62,
+          0.9,
+          0.62,
+          0.2
+        ],
+        [
+          0.14,
+          0.42,
+          0.62,
+          0.42,
+          0.14
+        ],
+        [
+          0.04,
+          0.14,
+          0.2,
+          0.14,
+          0.04
+        ]
+      ]
+    },
+    "windows": {
+      "round": [
+        1.3178,
+        1.3327
+      ],
+      "trunc": [
+        1.3436,
+        1.3538
+      ]
+    },
+    "note": "Figure 4 IS an exact radial Gaussian at printed precision — but only inside a narrow sigma window the book never prints, and the window that works under round-to-2dp is DISJOINT from the one that works under truncation. A team deriving the kernel from its own fit lands outside the other team's window and gets a different field, silently. The printed 25 values are the only thing two implementations can both reach, so the kernel is pinned verbatim. (Reconciles the open question between our earlier reading — 'the values match no clean formula' — and anrbj666's 'exact Gaussian': theirs is right about the shape, ours about the reproducibility. Both conclusions point here.)"
+  },
+  "ordering_probe": {
+    "pinned": "(1 - rho) * tau + delta",
+    "alternative": "tau - rho * tau + delta",
+    "cases": [
+      {
+        "tau": 0.05,
+        "delta": 0.04,
+        "pinned_order": 0.085,
+        "alternative_order": 0.08499999999999999,
+        "equal": false
+      },
+      {
+        "tau": 0.05,
+        "delta": 0.14,
+        "pinned_order": 0.18500000000000003,
+        "alternative_order": 0.185,
+        "equal": false
+      },
+      {
+        "tau": 0.1,
+        "delta": 0.14,
+        "pinned_order": 0.23000000000000004,
+        "alternative_order": 0.23,
+        "equal": false
+      }
+    ],
+    "note": "Algebraically identical, not identical in IEEE-754 doubles. Because this model rounds nothing and each side RECOMPUTES the rival's field rather than receiving it, a byte-comparison of two recomputed fields can differ on the last bit purely from evaluation order. Pin the order as written, or compare fields with a tolerance — do not do neither."
+  },
+  "emit": [
+    {
+      "center": [
+        3,
+        3
+      ],
+      "note": "kernel deposited on an empty field, board centre",
+      "field": {
+        "1,1": 0.04,
+        "1,2": 0.14,
+        "1,3": 0.2,
+        "1,4": 0.14,
+        "1,5": 0.04,
+        "2,1": 0.14,
+        "2,2": 0.42,
+        "2,3": 0.62,
+        "2,4": 0.42,
+        "2,5": 0.14,
+        "3,1": 0.2,
+        "3,2": 0.62,
+        "3,3": 0.9,
+        "3,4": 0.62,
+        "3,5": 0.2,
+        "4,1": 0.14,
+        "4,2": 0.42,
+        "4,3": 0.62,
+        "4,4": 0.42,
+        "4,5": 0.14,
+        "5,1": 0.04,
+        "5,2": 0.14,
+        "5,3": 0.2,
+        "5,4": 0.14,
+        "5,5": 0.04
+      }
+    },
+    {
+      "center": [
+        0,
+        0
+      ],
+      "note": "corner emission clipped to board bounds",
+      "field": {
+        "0,0": 0.9,
+        "0,1": 0.62,
+        "0,2": 0.2,
+        "1,0": 0.62,
+        "1,1": 0.42,
+        "1,2": 0.14,
+        "2,0": 0.2,
+        "2,1": 0.14,
+        "2,2": 0.04
+      }
+    }
+  ],
+  "scalar_traces": {
+    "pure_decay": {
+      "note": "book ch.4 worked example: a fresh centre trace after one full turn of pure decay, no new deposit (the book prints ~0.81)",
+      "tau": 0.9,
+      "delta": 0.0,
+      "after": 0.81
+    },
+    "clamp": {
+      "note": "the upper clamp earns its keep: the printed formula's max(0, .) alone would leave 1.43, above the book's declared [0, 0.9] range for tau",
+      "tau": 0.9,
+      "delta": 0.62,
+      "raw": 1.4300000000000002,
+      "after": 0.9
+    },
+    "chain": {
+      "note": "three full turns of one cell, from an EMPTY start: an orthogonal deposit, then two turns at kernel distance 2. The fork shows the same predecessor under a 0.14 deposit instead of 0.20. Values contributed by anrbj666 (Alon Engel, Renat Karimov) and re-derived here from the book's figure 4 alone.",
+      "steps": [
+        {
+          "delta": 0.62,
+          "tau": 0.62
+        },
+        {
+          "delta": 0.2,
+          "tau": 0.758
+        },
+        {
+          "delta": 0.2,
+          "tau": 0.8822000000000001
+        }
+      ],
+      "fork_at_turn_3_with_delta_0_14": 0.8222
+    }
+  },
+  "field_walk": {
+    "note": "three full turns of a moving agent's own trail on a 7x7 board, empty start",
+    "board_size": 7,
+    "rho": 0.1,
+    "center_intensity": 0.9,
+    "turns": [
+      {
+        "turn": 1,
+        "center": [
+          3,
+          3
+        ],
+        "field": {
+          "1,1": 0.04,
+          "1,2": 0.14,
+          "1,3": 0.2,
+          "1,4": 0.14,
+          "1,5": 0.04,
+          "2,1": 0.14,
+          "2,2": 0.42,
+          "2,3": 0.62,
+          "2,4": 0.42,
+          "2,5": 0.14,
+          "3,1": 0.2,
+          "3,2": 0.62,
+          "3,3": 0.9,
+          "3,4": 0.62,
+          "3,5": 0.2,
+          "4,1": 0.14,
+          "4,2": 0.42,
+          "4,3": 0.62,
+          "4,4": 0.42,
+          "4,5": 0.14,
+          "5,1": 0.04,
+          "5,2": 0.14,
+          "5,3": 0.2,
+          "5,4": 0.14,
+          "5,5": 0.04
+        }
+      },
+      {
+        "turn": 2,
+        "center": [
+          3,
+          4
+        ],
+        "field": {
+          "1,1": 0.036000000000000004,
+          "1,2": 0.16600000000000004,
+          "1,3": 0.32000000000000006,
+          "1,4": 0.32600000000000007,
+          "1,5": 0.17600000000000002,
+          "1,6": 0.04,
+          "2,1": 0.12600000000000003,
+          "2,2": 0.518,
+          "2,3": 0.9,
+          "2,4": 0.9,
+          "2,5": 0.546,
+          "2,6": 0.14,
+          "3,1": 0.18000000000000002,
+          "3,2": 0.758,
+          "3,3": 0.9,
+          "3,4": 0.9,
+          "3,5": 0.8,
+          "3,6": 0.2,
+          "4,1": 0.12600000000000003,
+          "4,2": 0.518,
+          "4,3": 0.9,
+          "4,4": 0.9,
+          "4,5": 0.546,
+          "4,6": 0.14,
+          "5,1": 0.036000000000000004,
+          "5,2": 0.16600000000000004,
+          "5,3": 0.32000000000000006,
+          "5,4": 0.32600000000000007,
+          "5,5": 0.17600000000000002,
+          "5,6": 0.04
+        }
+      },
+      {
+        "turn": 3,
+        "center": [
+          2,
+          4
+        ],
+        "field": {
+          "0,2": 0.04,
+          "0,3": 0.14,
+          "0,4": 0.2,
+          "0,5": 0.14,
+          "0,6": 0.04,
+          "1,1": 0.032400000000000005,
+          "1,2": 0.28940000000000005,
+          "1,3": 0.7080000000000001,
+          "1,4": 0.9,
+          "1,5": 0.5784,
+          "1,6": 0.17600000000000002,
+          "2,1": 0.11340000000000003,
+          "2,2": 0.6662,
+          "2,3": 0.9,
+          "2,4": 0.9,
+          "2,5": 0.9,
+          "2,6": 0.32600000000000007,
+          "3,1": 0.16200000000000003,
+          "3,2": 0.8222,
+          "3,3": 0.9,
+          "3,4": 0.9,
+          "3,5": 0.9,
+          "3,6": 0.32000000000000006,
+          "4,1": 0.11340000000000003,
+          "4,2": 0.5062,
+          "4,3": 0.9,
+          "4,4": 0.9,
+          "4,5": 0.6314000000000001,
+          "4,6": 0.16600000000000004,
+          "5,1": 0.032400000000000005,
+          "5,2": 0.14940000000000003,
+          "5,3": 0.2880000000000001,
+          "5,4": 0.29340000000000005,
+          "5,5": 0.1584,
+          "5,6": 0.036000000000000004
+        }
+      }
+    ]
+  },
+  "divergence_vs_reference": {
+    "note": "one agent at [3,3] on an empty 7x7, after one turn, under each model — the fields differ in shape AND support, so a team can see at a glance which model it built. Neither is wrong; they are different registrations.",
+    "center": [
+      3,
+      3
+    ],
+    "subtractive_chebyshev_v1": {
+      "1,1": 0.3,
+      "1,2": 0.3,
+      "1,3": 0.3,
+      "1,4": 0.3,
+      "1,5": 0.3,
+      "2,1": 0.3,
+      "2,2": 0.6,
+      "2,3": 0.6,
+      "2,4": 0.6,
+      "2,5": 0.3,
+      "3,1": 0.3,
+      "3,2": 0.6,
+      "3,3": 0.9,
+      "3,4": 0.6,
+      "3,5": 0.3,
+      "4,1": 0.3,
+      "4,2": 0.6,
+      "4,3": 0.6,
+      "4,4": 0.6,
+      "4,5": 0.3,
+      "5,1": 0.3,
+      "5,2": 0.3,
+      "5,3": 0.3,
+      "5,4": 0.3,
+      "5,5": 0.3
+    },
+    "multiplicative_book_v1": {
+      "1,1": 0.04,
+      "1,2": 0.14,
+      "1,3": 0.2,
+      "1,4": 0.14,
+      "1,5": 0.04,
+      "2,1": 0.14,
+      "2,2": 0.42,
+      "2,3": 0.62,
+      "2,4": 0.42,
+      "2,5": 0.14,
+      "3,1": 0.2,
+      "3,2": 0.62,
+      "3,3": 0.9,
+      "3,4": 0.62,
+      "3,5": 0.2,
+      "4,1": 0.14,
+      "4,2": 0.42,
+      "4,3": 0.62,
+      "4,4": 0.42,
+      "4,5": 0.14,
+      "5,1": 0.04,
+      "5,2": 0.14,
+      "5,3": 0.2,
+      "5,4": 0.14,
+      "5,5": 0.04
+    },
+    "identical": false
+  }
+}

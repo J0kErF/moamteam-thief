@@ -1,0 +1,199 @@
+{
+  "description": "PROPOSED — `smell_binding:commit_grid_v1` (SPEC section 7.4). Under the reference wire the smell grid is the one per-step observable no commitment covers, so a stale or forged frame is provable only to the receiver that refused it. This binding seals sha256(canonical_json(smell_grid_as_transmitted)) INSIDE the step record, so the grid enters the existing commit preimage and a mismatch becomes provable at the mutual audit. The wire is unchanged and the commit algorithm is unchanged; only the sealed record grows a key. It buys AUTHENTICITY and explicitly not privacy — an honest bound grid inverts to the sender's cell exactly as an unbound one does. Proposed by anrbj666, scoped by imreeyal, agreed 2026-07-29; no implementation has shipped it yet, and because it changes a commit preimage it must never debut in a counted game.",
+  "status": "PROPOSED",
+  "digest": {
+    "construction": "sha256(canonical_json(smell_grid_as_transmitted))",
+    "vectors": [
+      {
+        "grid": {
+          "2,3": 0.9,
+          "2,4": 0.6,
+          "10,1": 0.3
+        },
+        "note": "a populated grid. The keys are STRINGS, so canonical JSON sorts them lexicographically and '10,1' precedes '2,3'. An implementation that sorts its grid numerically before serializing agrees with this fixture on every board narrower than eleven and silently disagrees on every board wider than ten",
+        "sha256": "4bc6a8cbdd3d7f1679057769fe60df4c26f42df6e187d6390c7964943faec9bf"
+      },
+      {
+        "grid": {},
+        "note": "the empty grid — the `{}` convention. It is a legal input with a real digest, not an absence; a bound sender that transmits nothing seals THIS value and its audit passes. The binding is inert under a nothing-on-the-wire arrangement (the digest is constant) and still harmless",
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      {
+        "grid": {
+          "1,1": 0.3,
+          "1,2": 0.3,
+          "1,3": 0.3,
+          "1,4": 0.3,
+          "1,5": 0.3,
+          "2,1": 0.3,
+          "2,2": 0.6,
+          "2,3": 0.6,
+          "2,4": 0.6,
+          "2,5": 0.3,
+          "3,1": 0.3,
+          "3,2": 0.6,
+          "3,3": 0.9,
+          "3,4": 0.6,
+          "3,5": 0.3,
+          "4,1": 0.3,
+          "4,2": 0.6,
+          "4,3": 0.6,
+          "4,4": 0.6,
+          "4,5": 0.3,
+          "5,1": 0.3,
+          "5,2": 0.3,
+          "5,3": 0.3,
+          "5,4": 0.3,
+          "5,5": 0.3
+        },
+        "note": "the section-5 emitted field, bound as it would actually ride the wire — the digest is over the transmitted value, never over a re-derived or re-rounded copy",
+        "sha256": "90fad89422564571cc36eeaef8febfdd58ef40a55c6ee17be13b036f105fd685"
+      }
+    ]
+  },
+  "sealed_record": {
+    "note": "the binding key rides the section-3 preimage — same construction, larger record. `commit_moves` is the point of this vector: if adding the key left the commit unchanged, the grid would not be bound to anything. The board is 12 wide so that the sample grid's '10,1' key is a legal cell — the lexicographic-ordering trap only bites on boards wider than ten.",
+    "nonce": "9f8e7d6c5b4a39281706f5e4d3c2b1a0",
+    "grid": {
+      "2,3": 0.9,
+      "2,4": 0.6,
+      "10,1": 0.3
+    },
+    "unbound": {
+      "record": {
+        "step": 4,
+        "state": "grid=12x12;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "MOVE:E",
+        "intent": "truth",
+        "hint": "The alley smells of rain."
+      },
+      "commit": "7e8bac756c99b24172ea12b086d148d083cb051774698072f386c443ea5826a5"
+    },
+    "bound": {
+      "record": {
+        "step": 4,
+        "state": "grid=12x12;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "MOVE:E",
+        "intent": "truth",
+        "hint": "The alley smells of rain.",
+        "smell_grid_sha256": "4bc6a8cbdd3d7f1679057769fe60df4c26f42df6e187d6390c7964943faec9bf"
+      },
+      "commit": "d877bb9c9be4d06aa5a2e83122ecc5e61785e28fd4f1e59478f168b31fe1f3d8"
+    },
+    "commit_moves": true
+  },
+  "audit_rule": [
+    {
+      "sealed_record": {
+        "step": 4,
+        "state": "grid=12x12;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "MOVE:E",
+        "intent": "truth",
+        "hint": "The alley smells of rain.",
+        "smell_grid_sha256": "4bc6a8cbdd3d7f1679057769fe60df4c26f42df6e187d6390c7964943faec9bf"
+      },
+      "archived_grid": {
+        "2,3": 0.9,
+        "2,4": 0.6,
+        "10,1": 0.3
+      },
+      "note": "the ordinary case: the grid the verifier archived re-hashes to the digest the sender sealed",
+      "verdict": "ok"
+    },
+    {
+      "sealed_record": {
+        "step": 4,
+        "state": "grid=12x12;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "MOVE:E",
+        "intent": "truth",
+        "hint": "The alley smells of rain.",
+        "smell_grid_sha256": "4bc6a8cbdd3d7f1679057769fe60df4c26f42df6e187d6390c7964943faec9bf"
+      },
+      "archived_grid": {
+        "2,3": 0.9,
+        "2,4": 0.5,
+        "10,1": 0.3
+      },
+      "note": "one cell differs between what was sealed and what was archived. Today this is at best evidence-grade in one team's dispute file; under the binding it is AUDIT-GRADE — the sender sealed one field and transmitted another",
+      "verdict": "bound_mismatch"
+    },
+    {
+      "sealed_record": {
+        "step": 4,
+        "state": "grid=12x12;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "MOVE:E",
+        "intent": "truth",
+        "hint": "The alley smells of rain.",
+        "smell_grid_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "archived_grid": {},
+      "note": "a bound sender under a nothing-on-the-wire arrangement: `{}` sealed, `{}` archived, audit clean",
+      "verdict": "ok"
+    },
+    {
+      "sealed_record": {
+        "step": 4,
+        "state": "grid=12x12;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "MOVE:E",
+        "intent": "truth",
+        "hint": "The alley smells of rain.",
+        "smell_grid_sha256": "4bc6a8cbdd3d7f1679057769fe60df4c26f42df6e187d6390c7964943faec9bf"
+      },
+      "archived_grid": null,
+      "note": "a sender that claims a binding but transmitted no grid at all for the step. There is nothing that can re-hash to the digest, so it is a mismatch — and it is NOT the empty case above, which has a real digest of its own",
+      "verdict": "bound_mismatch"
+    },
+    {
+      "sealed_record": {
+        "step": 4,
+        "state": "grid=12x12;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "MOVE:E",
+        "intent": "truth",
+        "hint": "The alley smells of rain."
+      },
+      "archived_grid": {
+        "2,3": 0.9,
+        "2,4": 0.6,
+        "10,1": 0.3
+      },
+      "note": "the peer never heard of the family and sealed no digest -> `unbound`, not a failure. The same rule as section 7's refusal table: silence is playable, in either direction",
+      "verdict": "unbound"
+    }
+  ],
+  "declaration": {
+    "note": "what crosses the wire is the family hash, exactly as for the other three families (section 7) — the doc itself never does. Both registrations live in locked_model.json; omission plays unbound.",
+    "declared_key": "smell_binding_sha256",
+    "registered": [
+      "none",
+      "commit_grid_v1"
+    ]
+  }
+}

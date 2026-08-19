@@ -1,0 +1,89 @@
+{
+  "description": "PROMOTED — the pairing declaration (SPEC section 7.2): sub_game_number and role ride the negotiate extras BESIDE `terms`, never inside it (the terms are a flat signed set; adding a key breaks the signature). Identical terms give identical game_uids, so a mispairing is invisible by the time an artifact exists — the handshake is the only place it can be caught. Behaviour, not bytes, so it is pinned as a truth table. Promoted 2026-07-26: both fields were declared AND asserted by two independent implementations across a full six-sub-game cross-team series on 2026-07-25 (imreeyal / anrbj666); the opponent's inbound greetings carry both fields top-level, alternating correctly with the role swap.",
+  "status": "PROMOTED",
+  "fields": {
+    "sub_game_number": "the index of the sub-game THIS peer believes it is playing, taken from its sealed step-0 record rather than re-read from a config default (a re-read default is exactly what desynchronises)",
+    "role": "'police' | 'thief' — the side this peer is playing in that sub-game",
+    "placement": "top-level in the negotiate message, alongside nonce/signature/identity and OUTSIDE `terms`"
+  },
+  "refusal_rule": [
+    {
+      "ours": {
+        "sub_game_number": 3,
+        "role": "thief"
+      },
+      "theirs": {
+        "sub_game_number": 3,
+        "role": "police"
+      },
+      "note": "the ordinary case: same game, complementary sides",
+      "decision": "play"
+    },
+    {
+      "ours": {
+        "sub_game_number": 3,
+        "role": "thief"
+      },
+      "theirs": {
+        "sub_game_number": 5,
+        "role": "police"
+      },
+      "note": "sub-game mismatch -> refuse: one game cannot carry two indices, and a peer that runs ahead never resynchronises",
+      "decision": "refuse:sub_game"
+    },
+    {
+      "ours": {
+        "sub_game_number": 3,
+        "role": "police"
+      },
+      "theirs": {
+        "sub_game_number": 3,
+        "role": "police"
+      },
+      "note": "role collision -> refuse: two of the same side can only deadlock",
+      "decision": "refuse:role"
+    },
+    {
+      "ours": {
+        "sub_game_number": 3,
+        "role": "thief"
+      },
+      "theirs": {},
+      "note": "they declare nothing (the unmodified reference peer) -> play",
+      "decision": "play"
+    },
+    {
+      "ours": {},
+      "theirs": {
+        "sub_game_number": 3,
+        "role": "police"
+      },
+      "note": "we declare nothing -> play; omission never refuses in either direction",
+      "decision": "play"
+    },
+    {
+      "ours": {
+        "sub_game_number": 3,
+        "role": "thief"
+      },
+      "theirs": {
+        "sub_game_number": "3",
+        "role": "police"
+      },
+      "note": "their sub-game is a string, not an int -> treated as silence, NOT as a mismatch: a cosmetic type difference must never cost a game",
+      "decision": "play"
+    },
+    {
+      "ours": {
+        "sub_game_number": 3,
+        "role": "thief"
+      },
+      "theirs": {
+        "sub_game_number": 3
+      },
+      "note": "partial declaration -> the field they did declare is checked, the absent one is silence",
+      "decision": "play"
+    }
+  ],
+  "why_it_compounds": "a failed handshake ends in about 60s while a real sub-game takes minutes, so the side that failed runs AHEAD and never resynchronises. Observed live: one side on sub-game 4 while the other was still on sub-game 2 — two teams describing different series, which is the shape App. E rule 35 zeroes for BOTH."
+}

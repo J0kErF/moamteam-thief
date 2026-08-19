@@ -1,0 +1,90 @@
+{
+  "description": "Scent field (book ch.4). Radial emit: half=grid//2, falloff=intensity/(half+1), value=round(max(0,intensity-falloff*chebyshev),3). Decay/step: round(max(0,v-decay),3). Only value>0 crosses the wire as {'r,c': value}. Each peer emits its own and transmits it, so this is a self-test — but a correct port is what makes your belief map behave as the book describes.",
+  "status": "CORE",
+  "emit": [
+    {
+      "center": [
+        3,
+        3
+      ],
+      "intensity": 0.9,
+      "grid_size": 5,
+      "board_size": 7,
+      "note": "full 5x5 field, centre 0.9, falloff 0.3/step",
+      "field": {
+        "1,1": 0.3,
+        "1,2": 0.3,
+        "1,3": 0.3,
+        "1,4": 0.3,
+        "1,5": 0.3,
+        "2,1": 0.3,
+        "2,2": 0.6,
+        "2,3": 0.6,
+        "2,4": 0.6,
+        "2,5": 0.3,
+        "3,1": 0.3,
+        "3,2": 0.6,
+        "3,3": 0.9,
+        "3,4": 0.6,
+        "3,5": 0.3,
+        "4,1": 0.3,
+        "4,2": 0.6,
+        "4,3": 0.6,
+        "4,4": 0.6,
+        "4,5": 0.3,
+        "5,1": 0.3,
+        "5,2": 0.3,
+        "5,3": 0.3,
+        "5,4": 0.3,
+        "5,5": 0.3
+      }
+    },
+    {
+      "center": [
+        0,
+        0
+      ],
+      "intensity": 0.9,
+      "grid_size": 5,
+      "board_size": 7,
+      "note": "corner emission clipped to board bounds",
+      "field": {
+        "0,0": 0.9,
+        "0,1": 0.6,
+        "0,2": 0.3,
+        "1,0": 0.6,
+        "1,1": 0.6,
+        "1,2": 0.3,
+        "2,0": 0.3,
+        "2,1": 0.3,
+        "2,2": 0.3
+      }
+    }
+  ],
+  "decay": [
+    {
+      "before": {
+        "3,3": 0.9,
+        "3,4": 0.6,
+        "3,5": 0.3
+      },
+      "decay": 0.1,
+      "note": "one step of decay by 0.1",
+      "after": {
+        "3,3": 0.8,
+        "3,4": 0.5,
+        "3,5": 0.2
+      }
+    },
+    {
+      "before": {
+        "1,1": 0.05
+      },
+      "decay": 0.1,
+      "note": "clamps to 0.0 at the floor",
+      "after": {
+        "1,1": 0.0
+      }
+    }
+  ]
+}

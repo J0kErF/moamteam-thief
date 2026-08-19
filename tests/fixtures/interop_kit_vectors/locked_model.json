@@ -1,0 +1,440 @@
+{
+  "description": "Locked-model declarations — ONE doc schema serving FOUR named-parameter families (scent_model, wire_shape, info_mode, smell_binding). A peer publishes a doc, hashes it with the section-2 compact canonical form, and declares only the hash at negotiate time under '<family>_sha256'. The schema exists so that two teams' hashes are COMPARABLE: a bare hash over an ad-hoc dict makes two correct implementations of the same model refuse each other. Refusal fires ONLY when both peers declare a family and disagree — omission is never refusal. See SPEC section 7.",
+  "status": "CORE",
+  "doc_schema": {
+    "keys": [
+      "family",
+      "name",
+      "params",
+      "example"
+    ],
+    "families": [
+      "scent_model",
+      "wire_shape",
+      "info_mode",
+      "smell_binding"
+    ],
+    "hash": "sha256(canonical_json(doc))",
+    "declared_key": "<family>_sha256"
+  },
+  "registered": [
+    {
+      "doc": {
+        "family": "scent_model",
+        "name": "subtractive_chebyshev_v1",
+        "params": {
+          "field_size": 5,
+          "emit_intensity": 0.9,
+          "min_center_intensity": 0.5,
+          "distance": "chebyshev",
+          "falloff": "linear",
+          "falloff_step": "emit_intensity / (field_size // 2 + 1)",
+          "decay": "subtractive",
+          "decay_per_step": 0.1,
+          "update": "tau' = round(max(0, tau - decay_per_step), 3)",
+          "rounding_decimals": 3,
+          "clamp": [
+            0.0,
+            null
+          ],
+          "cadence": "per_full_turn",
+          "order": "deposit_then_decay",
+          "receiver_side_decay": true,
+          "initial_field": "empty",
+          "transmitted": true
+        },
+        "example": {
+          "note": "emit at the centre of a 7x7 board, then one decay",
+          "emit_center": [
+            3,
+            3
+          ],
+          "emit_field": {
+            "1,1": 0.3,
+            "1,2": 0.3,
+            "1,3": 0.3,
+            "1,4": 0.3,
+            "1,5": 0.3,
+            "2,1": 0.3,
+            "2,2": 0.6,
+            "2,3": 0.6,
+            "2,4": 0.6,
+            "2,5": 0.3,
+            "3,1": 0.3,
+            "3,2": 0.6,
+            "3,3": 0.9,
+            "3,4": 0.6,
+            "3,5": 0.3,
+            "4,1": 0.3,
+            "4,2": 0.6,
+            "4,3": 0.6,
+            "4,4": 0.6,
+            "4,5": 0.3,
+            "5,1": 0.3,
+            "5,2": 0.3,
+            "5,3": 0.3,
+            "5,4": 0.3,
+            "5,5": 0.3
+          },
+          "after_one_decay": {
+            "1,1": 0.2,
+            "1,2": 0.2,
+            "1,3": 0.2,
+            "1,4": 0.2,
+            "1,5": 0.2,
+            "2,1": 0.2,
+            "2,2": 0.5,
+            "2,3": 0.5,
+            "2,4": 0.5,
+            "2,5": 0.2,
+            "3,1": 0.2,
+            "3,2": 0.5,
+            "3,3": 0.8,
+            "3,4": 0.5,
+            "3,5": 0.2,
+            "4,1": 0.2,
+            "4,2": 0.5,
+            "4,3": 0.5,
+            "4,4": 0.5,
+            "4,5": 0.2,
+            "5,1": 0.2,
+            "5,2": 0.2,
+            "5,3": 0.2,
+            "5,4": 0.2,
+            "5,5": 0.2
+          }
+        }
+      },
+      "declared_as": "scent_model_sha256",
+      "sha256": "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4",
+      "status": "CORE",
+      "evidence": "the reference implementation's own model; pinned byte-for-byte by pheromone.json (section 5)"
+    },
+    {
+      "doc": {
+        "family": "scent_model",
+        "name": "multiplicative_book_v1",
+        "params": {
+          "field_size": 5,
+          "center_intensity": 0.9,
+          "decay_rho": 0.1,
+          "kernel": [
+            [
+              0.04,
+              0.14,
+              0.2,
+              0.14,
+              0.04
+            ],
+            [
+              0.14,
+              0.42,
+              0.62,
+              0.42,
+              0.14
+            ],
+            [
+              0.2,
+              0.62,
+              0.9,
+              0.62,
+              0.2
+            ],
+            [
+              0.14,
+              0.42,
+              0.62,
+              0.42,
+              0.14
+            ],
+            [
+              0.04,
+              0.14,
+              0.2,
+              0.14,
+              0.04
+            ]
+          ],
+          "kernel_source": "book v3.0.0 figure 4 — printed values, verbatim lookup",
+          "decay": "multiplicative",
+          "update": "tau' = clamp((1 - rho) * tau + kernel_delta, 0, center_intensity)",
+          "evaluation_order": "(1 - rho) * tau + delta, then clamp",
+          "rounding_decimals": null,
+          "clamp": [
+            0.0,
+            0.9
+          ],
+          "cadence": "per_full_turn",
+          "order": "decay_then_deposit",
+          "receiver_side_decay": false,
+          "initial_field": "empty",
+          "transmitted": false
+        },
+        "example": {
+          "note": "the clamp case: a saturated cell decays, then takes an adjacent deposit",
+          "tau": 0.9,
+          "delta": 0.62,
+          "raw": 1.4300000000000002,
+          "clamped": 0.9
+        }
+      },
+      "declared_as": "scent_model_sha256",
+      "sha256": "934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9",
+      "status": "PROMOTED",
+      "evidence": "clean-room reproduction by anrbj666 (issue #6, 2026-07-20), and this exact doc hash was declared on the wire by their peer throughout the 2026-07-25 cross-team series"
+    },
+    {
+      "doc": {
+        "family": "wire_shape",
+        "name": "reference-v3",
+        "params": {
+          "tools": [
+            "negotiate",
+            "receive_turn",
+            "submit_audit",
+            "receive_control"
+          ],
+          "messages_per_half_turn": 1,
+          "smell_grid_on_wire": true,
+          "move_revealed": "at_audit",
+          "replicated_engines": false,
+          "phases": "all four of book ch.5, with Reveal deferred to the audit boundary",
+          "rival_position_computable_live": false
+        },
+        "example": {
+          "note": "one turn message per half-turn; the move is sealed, the field is sent",
+          "turn_message_keys": [
+            "step",
+            "commit",
+            "hint",
+            "smell_grid",
+            "barrier_placed"
+          ]
+        }
+      },
+      "declared_as": "wire_shape_sha256",
+      "sha256": "229ae6487a418c3fcb6da9be404de2f2533c288ebc228811bff6dedc4164d6f7",
+      "status": "PROMOTED",
+      "evidence": "two independent implementations played a full six-sub-game cross-team series on this shape (2026-07-25), mutual audits clean both ways, and their peer declared this exact doc hash"
+    },
+    {
+      "doc": {
+        "family": "wire_shape",
+        "name": "bookletter-v3",
+        "params": {
+          "messages_per_half_turn": 2,
+          "message_kinds": [
+            "commit",
+            "reveal"
+          ],
+          "smell_grid_on_wire": false,
+          "move_revealed": "per_half_turn",
+          "replicated_engines": true,
+          "commit_order": "police_first",
+          "withheld_until_audit": [
+            "nonce",
+            "verdict"
+          ],
+          "sealed_payload_fields": [
+            "step",
+            "role",
+            "sub_game",
+            "state_digest",
+            "action",
+            "hint",
+            "verdict"
+          ],
+          "audit_message_keys": [
+            "end_state_digest",
+            "group_id",
+            "nonces",
+            "verdicts"
+          ],
+          "rival_position_computable_live": true,
+          "unpinned_preimages": [
+            "state_digest",
+            "end_state_digest",
+            "config_sha256",
+            "terms_signature"
+          ]
+        },
+        "example": {
+          "note": "contributed by anrbj666 (Alon Engel, Renat Karimov), kit issue #6; the commit layer reproduces under the section-3 construction over the full 7-field payload, the four preimages above are not yet pinned",
+          "commit_construction": "SHA256(canonical(payload) + '|' + nonce)"
+        }
+      },
+      "declared_as": "wire_shape_sha256",
+      "sha256": "f3fc1d424c461a02a1db9490306318c46043501bc1da1bfcb1b56ff9bc76f376",
+      "status": "PROPOSED",
+      "evidence": "one implementation; four preimages still unpinned, so the hash will change when they are settled"
+    },
+    {
+      "doc": {
+        "family": "info_mode",
+        "name": "belief",
+        "params": {
+          "rival_position_in_observation": false,
+          "sources": [
+            "own_state",
+            "rival_scent",
+            "hints"
+          ],
+          "enforcement": "structural under wire_shape reference-v3 (the rival's position never crosses the wire); an honor term under bookletter-v3, where the wire carries it and only the brain's restraint withholds it",
+          "artifact_provable": {
+            "mismatch": true,
+            "violation": false,
+            "why": "a mismatch is provable from the two negotiate records; a violation is not, because a decision record does not disclose which information produced it"
+          }
+        },
+        "example": {
+          "note": "the observation space the brain is entitled to read",
+          "observation_keys": [
+            "self",
+            "barriers",
+            "smell_grid",
+            "hint"
+          ]
+        }
+      },
+      "declared_as": "info_mode_sha256",
+      "sha256": "020947daeeb3f73494af9b04201326791742c7184085456e3517d21981ee1202",
+      "status": "PROMOTED",
+      "evidence": "declared as `info_mode_sha256` by BOTH independent implementations, byte-identical to this registration, in every handshake from the 2026-08-01 warm-up through the 2026-08-04 counted series (both role directions) — see live_reproduction below, where the checker asserts the observed hash still equals the registered doc. On 2026-07-25 it had travelled as a bare string; that limit is discharged"
+    },
+    {
+      "doc": {
+        "family": "info_mode",
+        "name": "exact",
+        "params": {
+          "rival_position_in_observation": true,
+          "sources": [
+            "own_state",
+            "rival_position",
+            "rival_scent",
+            "hints"
+          ],
+          "enforcement": "structural under wire_shape reference-v3 (the rival's position never crosses the wire); an honor term under bookletter-v3, where the wire carries it and only the brain's restraint withholds it",
+          "artifact_provable": {
+            "mismatch": true,
+            "violation": false,
+            "why": "a mismatch is provable from the two negotiate records; a violation is not, because a decision record does not disclose which information produced it"
+          }
+        },
+        "example": {
+          "note": "the observation space the brain is entitled to read",
+          "observation_keys": [
+            "self",
+            "barriers",
+            "rival_position",
+            "smell_grid",
+            "hint"
+          ]
+        }
+      },
+      "declared_as": "info_mode_sha256",
+      "sha256": "be93ca76794f1bf638572f532bba32e08131737397febf377395abe7333c5489",
+      "status": "PROPOSED",
+      "evidence": "registered as the counterpart of `belief`; no second implementation has declared it"
+    },
+    {
+      "doc": {
+        "family": "smell_binding",
+        "name": "none",
+        "params": {},
+        "example": {
+          "note": "the default and the whole of today's wire: the transmitted grid is unauthenticated. Registered so that `unbound` is a state a peer can declare rather than a silence it cannot distinguish from ignorance.",
+          "sealed_record_keys_added": []
+        }
+      },
+      "declared_as": "smell_binding_sha256",
+      "sha256": "f471af61ad178939e528b1346f996ed52f46fb06c9f420d913bf26dec524c5a6",
+      "status": "PROPOSED",
+      "evidence": "the unbound default. It describes what every implementation already does, but NO implementation declares it yet — the registration exists so that `unbound` becomes sayable"
+    },
+    {
+      "doc": {
+        "family": "smell_binding",
+        "name": "commit_grid_v1",
+        "params": {
+          "binds": "smell_grid",
+          "sealed_record_key": "smell_grid_sha256",
+          "digest": "sha256(canonical_json(smell_grid_as_transmitted))",
+          "grid_as_transmitted": "the exact wire value of that step's smell_grid; an empty grid is {} and hashes as {}",
+          "commit_construction": "unchanged — the key rides the existing section-3 preimage",
+          "wire": "unchanged",
+          "verified_at": "mutual_audit",
+          "mismatch_grade": "audit",
+          "buys": [
+            "authenticity"
+          ],
+          "does_not_buy": [
+            "privacy"
+          ]
+        },
+        "example": {
+          "note": "the digest a sender seals for one step; the verifier re-hashes the grid it archived as received and compares",
+          "smell_grid": {
+            "2,3": 0.9,
+            "2,4": 0.6,
+            "10,1": 0.3
+          },
+          "smell_grid_sha256": "4bc6a8cbdd3d7f1679057769fe60df4c26f42df6e187d6390c7964943faec9bf",
+          "empty_grid_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      },
+      "declared_as": "smell_binding_sha256",
+      "sha256": "7992141d219704e56a10d0c263c0272755760d0556d3271eeff3950bb366309b",
+      "status": "PROPOSED",
+      "evidence": "agreed by both league teams on 2026-07-29 as worth doing on its own merits — proposed by anrbj666, scoped by imreeyal. NOT YET IMPLEMENTED BY ANYONE: this is the weakest form of PROPOSED, published so a first and a second implementation can both build to it. Promotion needs the usual two, plus a live warm-up — it changes a commit preimage, so it never debuts in a counted game"
+    }
+  ],
+  "declaration_example": {
+    "note": "what actually crosses the wire in the negotiate extras — hashes only",
+    "scent_model_sha256": "934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9",
+    "wire_shape_sha256": "229ae6487a418c3fcb6da9be404de2f2533c288ebc228811bff6dedc4164d6f7",
+    "info_mode_sha256": "020947daeeb3f73494af9b04201326791742c7184085456e3517d21981ee1202"
+  },
+  "refusal_rule": [
+    {
+      "ours": "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4",
+      "theirs": "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4",
+      "note": "both declare, same model",
+      "decision": "play"
+    },
+    {
+      "ours": "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4",
+      "theirs": "934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9",
+      "note": "both declare, different models",
+      "decision": "refuse"
+    },
+    {
+      "ours": "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4",
+      "theirs": null,
+      "note": "we declare, they are silent (e.g. the unmodified reference peer)",
+      "decision": "play"
+    },
+    {
+      "ours": null,
+      "theirs": "934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9",
+      "note": "they declare, we are silent",
+      "decision": "play"
+    },
+    {
+      "ours": null,
+      "theirs": null,
+      "note": "neither declares",
+      "decision": "play"
+    }
+  ],
+  "live_reproduction": {
+    "note": "the mechanism, exercised end-to-end by two independent implementations (imreeyal / anrbj666) across two cited runs. Run 1, 2026-07-25: a full six-sub-game cross-team series, mutual audits clean both ways; their peer's inbound greeting declared the scent_model and wire_shape hashes below, each byte-identical to this kit's registered doc — the whole claim of this section, since a bare hash over an ad-hoc dict would have differed while describing the same model. The mechanism also demonstrably REFUSED: an earlier attempt that night aborted on a scent lock mismatch, before any game was played. Run 2, the 2026-08-01..04 campaign (five friendly series and the 2026-08-04 counted series): every handshake in both role directions additionally declared info_mode_sha256, byte-identical to the registered `belief` doc — on 2026-07-25 the mode had travelled as a bare string, a limit discharged by run 2.",
+    "observed_declarations_matching_registrations": {
+      "scent_model_sha256": "934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9",
+      "wire_shape_sha256": "229ae6487a418c3fcb6da9be404de2f2533c288ebc228811bff6dedc4164d6f7",
+      "info_mode_sha256": "020947daeeb3f73494af9b04201326791742c7184085456e3517d21981ee1202"
+    },
+    "observed_but_not_registered_here": {
+      "hardware_spec_sha256": "a FOURTH family observed on the wire that this kit does not register. It is not added here on the strength of one observation: the doc underneath it is unknown, and registering a family whose field set we have not seen would reintroduce exactly the ad-hoc-dict problem this section removes."
+    }
+  }
+}
